@@ -1,0 +1,14 @@
+{
+  "plugin": "org.smartide.plugin.fastapi",
+  "run": "fastapi dev main.py",
+  "intelligence": {
+    ".json": {
+      "enabled": true,
+      "run": "vscode-json-language-server --stdio"
+    },
+    ".py": {
+      "enabled": true,
+      "run": "pylsp"
+    }
+  }
+}
