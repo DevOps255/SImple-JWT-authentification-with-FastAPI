@@ -1,49 +1,44 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel 
-from data import auteurs_db
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 
-router = APIRouter(
-    prefix="/auteur",
-    tags= ["Auteur"],
-)
+from database import SessionLocal
 
-class AuteurCreation(BaseModel):
-    nom: str
-    nationalité : str
-    
+from models import User
+from schema import RegistrerSchema, TokenResponse, LoginSchema, UserResponse
+from security import hash_pwd, TokenMakeUp, get_actual_user, get_db
 
-class AuteurResponse(BaseModel):
-    id: int
-    nom: str
-    nationalité: str
+
+router = APIRouter(prefix="/auth", tags=["Authentification"])
+
+@router.post("/inscription", response_model=UserResponse, status_code=201)
+def SignUp(data: RegisterSchema, Session: Depends(get_db)):
     
-@router.get('')    
-def get_auteur():
-    return auteurs_db
+    FormHash = hash_pwd(data.pwd)
     
-@router.get("/{auteur_id}")   
-def get_single_author(auteur_id: int):
-    for author in auteurs_db:
-         
-         if author["id"] == auteur_id:
-             return author
-    raise HTTPException(status_code=404, detail="Author not found")       
+    new_user = User(
+        email = data.email,
+        nom = data.nom,
+        PassWord = data.PassWord
+    )
     
-@router.post(" ")
-def add_author(data: AuteurResponse):
-    
-    last = auteurs_db[-1]["id"] if len(auteurs_db) > 0 else 0
-    
-    new_author = {
-        "id": last + 1,
-        "nom": data.nom,
-        "nationalité": data.nationalité,
+    try:
         
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
         
-    }
-    
-    auteurs_db.append(new_author)
-    
-    return new_author
-   
+     except IntegrityError:
+         db.rollback()   
+         raise HTTPException(
+             status_code=400, 
+             detail="cet email est deja utilisé!"
+         )
+
+
+
+
+
+
+

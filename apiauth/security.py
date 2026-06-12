@@ -66,15 +66,32 @@ def get_actual_user(
          
      )
      
-     try:
+	try:
          
-         payload= jwt.decode(token,secret_key, algorithms=[algo] )
+		payload= jwt.decode(token,secret_key, algorithms=[algo] )
          
          
          user_id_str: str= payload.get("sub")
          
          if user_id_str is None:
              raise credential_error
+             
+          user _id = int(user_id_str)
+          utilisateur = db.get(User, user_id)
+          
+          if utilisateur is  None:
+              raise credential_error
+              
+          if not utilisateur.IsActive:
+              
+              raise HTTPException(
+                  status_code=status.HTTP_403_FORBIDDEN, detail="compte desactivé"
+                  
+              )
+          return utilisateur
+          
+          
+          
 			             
 
 
