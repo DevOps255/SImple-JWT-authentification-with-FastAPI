@@ -12,8 +12,8 @@ from security import hash_pwd, TokenMakeUp, get_actual_user, get_db
 
 router = APIRouter(prefix="/auth", tags=["Authentification"])
 
-@router.post("/inscription", response_model=UserResponse, status_code=201)
-def SignUp(data: RegisterSchema, Session: Depends(get_db)):
+@router.post("/inscription", reseponse_model=UserResponse, status_code=201)
+def 
     
     FormHash = hash_pwd(data.pwd)
     
@@ -29,12 +29,14 @@ def SignUp(data: RegisterSchema, Session: Depends(get_db)):
         db.commit()
         db.refresh(new_user)
         
-     except IntegrityError:
-         db.rollback()   
-         raise HTTPException(
+    except IntegrityError:
+        db.rollback()   
+        raise HTTPException(
              status_code=400, 
-             detail="cet email est deja utilisé!"
+             detail="cet email est deja utilisé!", detail="cet email est deja utilisé!"
          )
+    return new_user   
+         
 
 
 
