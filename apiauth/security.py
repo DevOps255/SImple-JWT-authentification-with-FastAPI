@@ -59,16 +59,15 @@ def get_actual_user(
     db: Session=Depends(get_db)):
     
     
-     credential_error= HTTPException(
-         status_code=status.HTTP_401_UNAUTHORIZED,
-         detail="Token invalide ou expiré",
-         headers={"WWW-Authenticate": "Bearer"},
+    credential_error= HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Token invalide ou expiré",
+        headers={"WWW-Authenticate": "Bearer"},
          
      )
-     
-	try:
-         
-		payload= jwt.decode(token,secret_key, algorithms=[algo] )
+		
+     try:
+         payload= jwt.decode(token,secret_key, algorithms=[algo] )
          
          
          user_id_str: str= payload.get("sub")
@@ -87,8 +86,8 @@ def get_actual_user(
               raise HTTPException(
                   status_code=status.HTTP_403_FORBIDDEN, detail="compte desactivé"
                   
-              )
-          return utilisateur
+			  )
+		return utilisateur
           
           
           
