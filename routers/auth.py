@@ -49,7 +49,7 @@ def Login(data: LoginSchema, db: Depends(get_db)):
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Email ou Mot de passe incorrect"
         )
         
-    Valid_pwd =     pwd_status(
+    Valid_pwd = pwd_status(
         data.pwd,
         data.hache
     )
@@ -64,7 +64,7 @@ def Login(data: LoginSchema, db: Depends(get_db)):
             status_code=status.HTTP_403_FORBIDDEN, detail="compte désactivé"
         )
         
-     token =    TokenMakeUp(
+    token = TokenMakeUp(
          {
              "sub": str(User.id)
          }
