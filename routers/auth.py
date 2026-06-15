@@ -7,13 +7,14 @@ from database import SessionLocal
 
 from models import User
 from schema import RegistrerSchema, TokenResponse, LoginSchema, UserResponse
-from security import hash_pwd, TokenMakeUp, get_actual_user, get_db
+from security import hash_pwd, TokenMakeUp, get_actual_user, get_db, pwd_status
 
 
 router = APIRouter(prefix="/auth", tags=["Authentification"])
 
 @router.post("/inscription", reseponse_model=UserResponse, status_code=201)
-def 
+def Registrer(data: RegistrerSchema, db:Session=Depends(get_db)):
+    
     
     FormHash = hash_pwd(data.pwd)
     
@@ -38,7 +39,41 @@ def
     return new_user   
          
 
-
+@router.post("/connexion", TokenResponse)
+def Login(data: LoginSchema, db: Depends(get_db)):
+    
+    user = db.query(User).filter(User.email == data.email).first()
+    
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Email ou Mot de passe incorrect"
+        )
+        
+    Valid_pwd =     pwd_status(
+        data.pwd,
+        data.hache
+    )
+    
+    if not Valid_pwd:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Email ou Mot de passe incorrect"
+        )
+        
+    if not User.IsActive:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="compte désactivé"
+        )
+        
+     token =    TokenMakeUp(
+         {
+             "sub": str(User.id)
+         }
+     )
+     
+     return {
+         "access_token": token,
+         "token_type": "bearer"
+     }
 
 
 

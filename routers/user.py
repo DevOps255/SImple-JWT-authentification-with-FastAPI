@@ -1,61 +1,13 @@
-from fastapi import FastAPI, APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import Optional
-from data import livres_db, auteurs_db
+from fastapi import APIRouter, Depends
+from model import User
+from schema import UserResponse
+from security import get_actual_user
 
 
-router = APIRouter(
-    prefix="/livre",
-    tags=["Livres"]
-)
+router = APIRouter(prefix="/user", tags=["Utilisateur"])
 
-class Livrecreation(BaseModel):
-    titre:  str
-    auteur: str
-    genre: str
-    année: int
+@router.get("/me", response_model=UserResponse)
+def read_profil(
+    Current_user: User=Depends(get_actual_user)):
     
-    
-class LivreResponse(BaseModel):
-    
-    id: int
-    titre: str
-    auteur: str
-    genre: str
-    nationalité: str
-    
-@router.get("")
-def  get_books(genre: Optional[str] = None):
-    
-    if genre is not None:
-        return [l for l in livres_db if l["genre"]== genre.lower()]
-    return livres_db
-    
-@router.get("/{livre_id}")
-def get_single_book(livre_id: int):
-    
-    for book in livres_db:
-        if book["livre_id "] == livre_id:
-            return book
-            
-    raise HTTPException  (status_code=404, detail="tache introuvable ")
-        
-@router.get("/{livre_id}/auteur")
-def get_single_author(livre_id:int):
-    for book in livres_db:
-        if book["livre_id "] == livre_id:
-            auteur_id = livre_id
-            
-            for author in livres_db:
-                if author["id"] == auteur_id:
-                    return {
-                        "livre": book["titre"],
-                        "auteur": author["nom"],
-                        "nationalité": author["nationalité"]
-                        
-                    }
-            
-    raise HTTPException  (status_code=404, detail="tache introuvable ")
-        
-
-
+    return Current_user

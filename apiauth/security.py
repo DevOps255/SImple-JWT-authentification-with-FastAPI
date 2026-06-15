@@ -35,7 +35,7 @@ def hash_pwd(pwd: str) -> str:
     
     return pwd_context.hash(pwd)
     
-def pwd_status(pwd: str, hache) -> str:
+def pwd_status(pwd: str, hache) -> bool:
     
     return pwd_context.verify(pwd, hache)
     
@@ -62,7 +62,9 @@ def get_actual_user(
      credential_error= HTTPException(
          status_code=status.HTTP_401_UNAUTHORIZED,
          detail="Token invalide ou expiré",
-         headers={"WWW-Authenticate": "Bearer"},
+         headers={
+             "WWW-Authenticate": "Bearer"
+             },
          
      )
      
