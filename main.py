@@ -11,3 +11,9 @@ app = FastAPI(title="API Auth JWT")
 
 app.include_router(AuthRouter)
 app.inlcude_router(UserRouter)
+
+@app.get("/")
+def Welcome():
+    return {
+        "message": "API avec Auth"
+    }
